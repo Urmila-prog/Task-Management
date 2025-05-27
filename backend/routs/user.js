@@ -54,18 +54,41 @@ router.post('/signup', async (req, res) => {
 // login
 router.post('/login', async (req, res) => {
   try {
+    console.log('Login attempt:', req.body);
     const { username, password } = req.body;
     
     if (!username || !password) {
+      console.log('Missing credentials');
       return res.status(400).json({ message: 'Username and password are required' });
     }
 
-    const existingUser = await User.findOne({ username });
+    // Check MongoDB connection
+    if (mongoose.connection.readyState !== 1) {
+      console.log('MongoDB not connected. Attempting to reconnect...');
+      try {
+        await mongoose.connect('mongodb://127.0.0.1:27017/task_management', {
+          serverSelectionTimeoutMS: 5000,
+          socketTimeoutMS: 45000,
+        });
+      } catch (err) {
+        console.error('Failed to connect to MongoDB:', err);
+        return res.status(503).json({ 
+          message: 'Database connection error. Please try again in a few moments.',
+          error: 'DATABASE_CONNECTION_ERROR'
+        });
+      }
+    }
+
+    const existingUser = await User.findOne({ username }).maxTimeMS(5000);
+    console.log('User found:', existingUser ? 'Yes' : 'No');
+    
     if (!existingUser) {
       return res.status(400).json({ message: 'Invalid credentials' });
     }
 
     const isPasswordValid = await bcrypt.compare(password, existingUser.password);
+    console.log('Password valid:', isPasswordValid);
+    
     if (!isPasswordValid) {
       return res.status(400).json({ message: 'Invalid credentials' });
     }
@@ -76,6 +99,7 @@ router.post('/login', async (req, res) => {
       { expiresIn: '2d' }
     );
 
+    console.log('Login successful for user:', username);
     res.status(200).json({
       id: existingUser._id.toString(),
       token: token,
@@ -84,7 +108,18 @@ router.post('/login', async (req, res) => {
     });
   } catch (err) {
     console.error('Login error:', err);
-    res.status(500).json({ message: 'Internal server error' });
+    
+    if (err.name === 'MongooseError' && err.message.includes('buffering timed out')) {
+      return res.status(503).json({ 
+        message: 'Database connection timeout. Please try again.',
+        error: 'DATABASE_TIMEOUT'
+      });
+    }
+    
+    res.status(500).json({ 
+      message: 'An error occurred during login. Please try again.',
+      error: 'INTERNAL_SERVER_ERROR'
+    });
   }
 });
 

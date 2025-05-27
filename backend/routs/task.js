@@ -5,7 +5,7 @@ const {authenticateToken} = require('../middleware/auth');
 
 // Helper function to get user ID from request
 const getUserId = (req) => {
-    return req.user?.id || req.headers.id;
+    return req.user?.id;
 };
 
 router.post('/createtask', authenticateToken, async(req, res) => {
@@ -58,114 +58,109 @@ router.get('/getalltask', authenticateToken, async (req, res) => {
     }
 });
 
-router.delete('/deletetask/:id', authenticateToken, async (req, res)=>{
-  try{
-    const {id} = req.params;
-    const userId = getUserId(req);
-    await Task.findByIdAndDelete(id);
-    await User.findByIdAndUpdate(userId, {$pull: {tasks:id}});
-    res.status(200).json({data: userData});
-  }catch (err) {
-    console.error(' error:', err);
-    return res.status(500).json({ message: 'Internal server error' });
-  }
+router.delete('/deletetask/:id', authenticateToken, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const userId = getUserId(req);
+        await Task.findByIdAndDelete(id);
+        await User.findByIdAndUpdate(userId, { $pull: { tasks: id } });
+        res.status(200).json({ message: 'task deleted successfully' });
+    } catch (err) {
+        console.error('Error deleting task:', err);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
 });
 
-router.put('/updatedtask/:id', authenticateToken, async (req, res)=>{
-  try{
-    const {id} = req.params;
-    const {title, desc} = req.body;
-    const userId = getUserId(req);
-    await Task.findByIdAndUpdate(id, {title: title, desc:desc});
-    res.status(200).json({meaasge: 'task updated successfully'});
-  }catch (err) {
-    console.error(' error:', err);
-    return res.status(500).json({ message: 'Internal server error' });
-  }
+router.put('/updatedtask/:id', authenticateToken, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { title, desc } = req.body;
+        const userId = getUserId(req);
+        await Task.findByIdAndUpdate(id, { title: title, desc: desc });
+        res.status(200).json({ message: 'task updated successfully' });
+    } catch (err) {
+        console.error('Error updating task:', err);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
 });
 
-
-router.put('/updateimptask/:id', authenticateToken, async (req, res)=>{
-  try{
-    const {id} = req.params;
-    const TaskData = await Task.findById(id);
-    const ImpTask = TaskData.imporatnt;
-    const userId = getUserId(req);
-    await Task.findByIdAndUpdate(id, {important:'!ImpTask'});
-    res.status(200).json({meaasge: 'task updated successfully'});
-  }catch (err) {
-    console.error(' error:', err);
-    return res.status(500).json({ message: 'Internal server error' });
-  }
+router.put('/updateimptask/:id', authenticateToken, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const TaskData = await Task.findById(id);
+        const isImportant = TaskData.important;
+        const userId = getUserId(req);
+        await Task.findByIdAndUpdate(id, { important: !isImportant });
+        res.status(200).json({ message: 'task updated successfully' });
+    } catch (err) {
+        console.error('Error updating task importance:', err);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
 });
 
-
-router.put('/updatecomptask/:id', authenticateToken, async (req, res)=>{
-  try{
-    const {id} = req.params;
-    const TaskData = await Task.findById(id);
-    const CompleteTask = TaskData.complete;
-    const userId = getUserId(req);
-    await Task.findByIdAndUpdate(id, {important:'!CompleteTask'});
-    res.status(200).json({meaasge: 'task updated successfully'});
-  }catch (err) {
-    console.error(' error:', err);
-    return res.status(500).json({ message: 'Internal server error' });
-  }
+router.put('/updatecomptask/:id', authenticateToken, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const TaskData = await Task.findById(id);
+        const CompleteTask = TaskData.complete;
+        const userId = getUserId(req);
+        await Task.findByIdAndUpdate(id, { complete: !CompleteTask });
+        res.status(200).json({ message: 'task updated successfully' });
+    } catch (err) {
+        console.error('Error updating task completion:', err);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
 });
 
-router.get('/getimptask', authenticateToken, async (req, res)=>{
-  try{
-    const {id} = req.params;
-    const userId = getUserId(req);
-    const Data = await User.findById(userId).populate({
-    path:'tasks',
-    match: {imporatant: true},
-    options: {sort: {createdAt:-1}},
-   });
-   const ImpTaskData = Data.tasks;
-    res.status(200).json({data: ImpTaskData});
-  }catch (err) {
-    console.error(' error:', err);
-    return res.status(500).json({ message: 'Internal server error' });
-  }
+router.get('/getimptask', authenticateToken, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const userId = getUserId(req);
+        const Data = await User.findById(userId).populate({
+            path: 'tasks',
+            match: { important: true },
+            options: { sort: { createdAt: -1 } }
+        });
+        const ImpTaskData = Data.tasks;
+        res.status(200).json({ data: ImpTaskData });
+    } catch (err) {
+        console.error('Error fetching important tasks:', err);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
 });
 
-
-router.get('/geticomtask', authenticateToken, async (req, res)=>{
-  try{
-    const {id} = req.params;
-    const userId = getUserId(req);
-    const Data = await User.findById(userId).populate({
-    path:'tasks',
-    match: {complete: true},
-    options: {sort: {createdAt:-1}},
-   });
-   const compTaskData = Data.tasks;
-    res.status(200).json({data: compTaskData});
-  }catch (err) {
-    console.error(' error:', err);
-    return res.status(500).json({ message: 'Internal server error' });
-  }
+router.get('/geticomtask', authenticateToken, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const userId = getUserId(req);
+        const Data = await User.findById(userId).populate({
+            path: 'tasks',
+            match: { complete: true },
+            options: { sort: { createdAt: -1 } }
+        });
+        const compTaskData = Data.tasks;
+        res.status(200).json({ data: compTaskData });
+    } catch (err) {
+        console.error('Error fetching completed tasks:', err);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
 });
 
-
-router.get('/getincomtask', authenticateToken, async (req, res)=>{
-  try{
-    const {id} = req.params;
-    const userId = getUserId(req);
-    const Data = await User.findById(userId).populate({
-    path:'tasks',
-    match: {complete: false},
-    options: {sort: {createdAt:-1}},
-   });
-   const IncompTaskData = Data.tasks;
-    res.status(200).json({data: IncompTaskData});
-  }catch (err) {
-    console.error(' error:', err);
-    return res.status(500).json({ message: 'Internal server error' });
-  }
+router.get('/getincomtask', authenticateToken, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const userId = getUserId(req);
+        const Data = await User.findById(userId).populate({
+            path: 'tasks',
+            match: { complete: false },
+            options: { sort: { createdAt: -1 } }
+        });
+        const IncompTaskData = Data.tasks;
+        res.status(200).json({ data: IncompTaskData });
+    } catch (err) {
+        console.error('Error fetching incomplete tasks:', err);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
 });
-
 
 module.exports = router;

@@ -9,10 +9,11 @@ const authenticateToken = (req, res, next) => {
     }
 
     try {
-        const verified = jwt.verify(token, process.env.JWT_SECRET);
-        req.headers.id = verified.id;
+        const verified = jwt.verify(token, process.env.JWT_SECRET || 'tcmTM');
+        req.user = verified;  // Store the entire verified user object
         next();
     } catch (err) {
+        console.error('Token verification error:', err);
         res.status(403).json({ message: 'Invalid token' });
     }
 };
