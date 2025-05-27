@@ -5,6 +5,7 @@ import {MdDelete} from 'react-icons/md';
 import { IoIosAddCircle } from "react-icons/io";
 import axios from 'axios';
 import EditTask from './EditTask';
+import CalendarIntegration from '../calendar/CalendarIntegration';
 
 const Cards = ({home, setInputDiv, data, onTaskUpdate}) => {
   const [tasks, setTasks] = useState(data?.tasks || []);
@@ -25,7 +26,7 @@ const Cards = ({home, setInputDiv, data, onTaskUpdate}) => {
         return;
       }
 
-      const response = await axios.put(`http://localhost:1000/api/v2/updatecomptask/${taskId}`, {}, {
+      const response = await axios.put(`https://task-management-2qxv.onrender.com/api/v2/updatecomptask/${taskId}`, {}, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -60,7 +61,7 @@ const Cards = ({home, setInputDiv, data, onTaskUpdate}) => {
         return;
       }
 
-      const response = await axios.put(`http://localhost:1000/api/v2/updateimptask/${taskId}`, {}, {
+      const response = await axios.put(`https://task-management-2qxv.onrender.com/api/v2/updateimptask/${taskId}`, {}, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -105,7 +106,7 @@ const Cards = ({home, setInputDiv, data, onTaskUpdate}) => {
         return;
       }
 
-      const response = await axios.delete(`http://localhost:1000/api/v2/deletetask/${taskId}`, {
+      const response = await axios.delete(`https://task-management-2qxv.onrender.com/api/v2/deletetask/${taskId}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -127,7 +128,7 @@ const Cards = ({home, setInputDiv, data, onTaskUpdate}) => {
 
   return (
     <>
-      <div className='grid grid-cols-3 gap-4 p-4'>
+      <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 p-4'>
         {tasks.map((card, idx) => (
           <div 
             key={idx} 
@@ -176,6 +177,9 @@ const Cards = ({home, setInputDiv, data, onTaskUpdate}) => {
                   <MdDelete/>
                 </button>
               </div>
+            </div>
+            <div className='w-full mt-2'>
+              <CalendarIntegration task={card} />
             </div>
           </div>
         ))}

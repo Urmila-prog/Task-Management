@@ -59,7 +59,7 @@ const Login = () => {
         }
       } else if (error.request) {
         // Request was made but no response received
-        setError('Cannot connect to server. Please check if the server is running at http://localhost:1000');
+        setError('Cannot connect to server. Please check if the server is running at https://task-management-2qxv.onrender.com');
       } else {
         // Error in request setup
         setError('An error occurred while trying to log in. Please try again.');
@@ -70,8 +70,8 @@ const Login = () => {
   };
 
   return (
-    <div className='h-[98vh] flex items-center justify-center'>
-      <div className='p-4 w-2/6 rounded bg-gray-800'>
+    <div className='min-h-[98vh] flex items-center justify-center p-4'>
+      <div className='w-full max-w-md p-6 rounded bg-gray-800'>
         <div className='text-2xl font-semibold mb-4'>Login</div>
         
         {error && (

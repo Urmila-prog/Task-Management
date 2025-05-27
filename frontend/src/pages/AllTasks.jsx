@@ -53,22 +53,24 @@ const AllTasks = () => {
 
   return (
     <>
-      <div>
+      <div className='h-full flex flex-col'>
         <div className='w-full flex justify-end px-4 py-4'>
           <button onClick={() => setInputDiv('fixed')}>
             <IoIosAddCircle className='text-4xl text-gray-300 hover:text-gray-100 transition-all duration-300'/>
           </button>
         </div>
-        {data && data.tasks && data.tasks.length > 0 ? (
-          <Cards 
-            home={'true'} 
-            setInputDiv={setInputDiv} 
-            data={data}
-            onTaskUpdate={fetchTasks}
-          />
-        ) : (
-          <div className='text-center text-gray-300 text-xl mt-4'>No tasks found. Create your first task!</div>
-        )}
+        <div className='flex-1 overflow-auto'>
+          {data && data.tasks && data.tasks.length > 0 ? (
+            <Cards 
+              home={'true'} 
+              setInputDiv={setInputDiv} 
+              data={data}
+              onTaskUpdate={fetchTasks}
+            />
+          ) : (
+            <div className='text-center text-gray-300 text-xl mt-4'>No tasks found. Create your first task!</div>
+          )}
+        </div>
       </div>
       <InputData inputDiv={inputDiv} setInputDiv={setInputDiv} onTaskCreated={fetchTasks}/>
     </>

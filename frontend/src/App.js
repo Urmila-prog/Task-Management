@@ -8,7 +8,7 @@ import IncompletedTasks from './pages/IncompletedTasks';
 import Signup from './pages/signup';
 import Login from './pages/login';
 import {useSelector} from 'react-redux';
-// aloo
+
 const App = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -22,14 +22,14 @@ const App = () => {
   }, [navigate, isLoggedIn, location.pathname]);
 
   return (
-    <div className='bg-gray-700 text-white h-screen p-2'>
-      <div className='flex gap-2 h-full'>
+    <div className='bg-gray-700 text-white min-h-screen h-screen p-2'>
+      <div className='flex flex-col md:flex-row gap-2 h-full'>
         {isLoggedIn && (
-          <div className='w-1/6 border border-gray-500 rounded-xl p-4 flex flex-col box-border justify-between'>
+          <div className='w-full md:w-1/6 border border-gray-500 rounded-xl p-4 flex flex-col box-border justify-between'>
             <Sidebar />
           </div>
         )}
-        <div className={`${isLoggedIn ? 'w-5/6' : 'w-full'} border border-gray-500 rounded-xl p-2`}>
+        <div className={`${isLoggedIn ? 'w-full md:w-5/6' : 'w-full'} border border-gray-500 rounded-xl p-2 h-full overflow-auto`}>
           <Routes>
             <Route exact path="/" element={<AllTasks />} />
             <Route path="/importanttasks" element={<ImportantTasks />} />

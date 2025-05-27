@@ -35,7 +35,7 @@ const EditTask = ({ editDiv, setEditDiv, task, onTaskUpdated }) => {
             }
 
             const response = await axios.put(
-                `http://localhost:1000/api/v2/updatedtask/${task._id}`,
+                `https://task-management-2qxv.onrender.com/api/v2/updatedtask/${task._id}`,
                 formData,
                 {
                     headers: {

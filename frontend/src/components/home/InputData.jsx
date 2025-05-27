@@ -26,7 +26,7 @@ const InputData = ({ inputDiv, setInputDiv, onTaskCreated }) => {
             }
 
             const response = await axios.post(
-                'http://localhost:1000/api/v2/createtask',
+                'https://task-management-2qxv.onrender.com/api/v2/createtask',
                 formData,
                 {
                     headers: {
@@ -52,8 +52,8 @@ const InputData = ({ inputDiv, setInputDiv, onTaskCreated }) => {
         <>
             <div className={`${inputDiv} top-0 left-0 bg-gray-800 opacity-80 h-screen w-full`}>
             </div>
-            <div className={`${inputDiv} top-0 flex left-0 items-center justify-center h-screen w-full`}>
-                <div className='w-2/6 bg-gray-500 p-4 rounded'>
+            <div className={`${inputDiv} top-0 flex left-0 items-center justify-center h-screen w-full p-4`}>
+                <div className='w-full max-w-md bg-gray-500 p-4 rounded'>
                     <div className='flex justify-end'>
                         <button className='text-2xl' onClick={() => setInputDiv('hidden')}> <IoClose /></button>
                     </div>
@@ -64,7 +64,7 @@ const InputData = ({ inputDiv, setInputDiv, onTaskCreated }) => {
                             name='title'
                             value={formData.title}
                             onChange={handleChange}
-                            className='px-3 py-2 rounded w-full my-3 bg-gray-700'
+                            className='px-3 py-2 rounded w-full my-3 bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400'
                             required
                         />
                         <textarea
@@ -72,12 +72,12 @@ const InputData = ({ inputDiv, setInputDiv, onTaskCreated }) => {
                             placeholder='Description...'
                             value={formData.desc}
                             onChange={handleChange}
-                            className='px-3 py-2 rounded w-full bg-gray-700 my-3'
+                            className='px-3 py-2 rounded w-full bg-gray-700 my-3 focus:outline-none focus:ring-2 focus:ring-blue-400'
                             required
                         />
                         <button
                             type="submit"
-                            className='px-3 py-2 bg-blue-400 rounded text-xl text-black font-semibold w-full'
+                            className='px-3 py-2 bg-blue-400 rounded text-xl text-black font-semibold w-full hover:bg-blue-500 transition-colors'
                         >
                             Create Task
                         </button>

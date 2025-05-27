@@ -36,12 +36,33 @@ const Signup = () => {
   };
 
     return (
-        <div className='h-[98vh] flex items-center justify-center'>
-          <div className='p-4 w-2/6 rounded bg-gray-800'>
+        <div className='min-h-[98vh] flex items-center justify-center p-4'>
+          <div className='w-full max-w-md p-6 rounded bg-gray-800'>
             <div className='text-2xl font-semibold mb-4'>SignUp</div>
-            <input type="text" placeholder='username' className='bg-gray-700 px-3 py-2 my-3 w-full rounded' name='username' value={data.username} onChange={change} />
-            <input type="email" placeholder='email' className='bg-gray-700 px-3 py-2 my-3 w-full rounded' name='email' value={data.email} onChange={change}/>
-            <input type="password" placeholder='password' className='bg-gray-700 px-3 py-2 my-3 w-full rounded' name='password' value={data.password} onChange={change} />
+            <input 
+              type="text" 
+              placeholder='username' 
+              className='bg-gray-700 px-3 py-2 my-3 w-full rounded focus:outline-none focus:ring-2 focus:ring-blue-400' 
+              name='username' 
+              value={data.username} 
+              onChange={change} 
+            />
+            <input 
+              type="email" 
+              placeholder='email' 
+              className='bg-gray-700 px-3 py-2 my-3 w-full rounded focus:outline-none focus:ring-2 focus:ring-blue-400' 
+              name='email' 
+              value={data.email} 
+              onChange={change}
+            />
+            <input 
+              type="password" 
+              placeholder='password' 
+              className='bg-gray-700 px-3 py-2 my-3 w-full rounded focus:outline-none focus:ring-2 focus:ring-blue-400' 
+              name='password' 
+              value={data.password} 
+              onChange={change} 
+            />
             <div className='w-full flex flex-col gap-3 mt-4'>
               <button 
                 className='bg-blue-400 text-xl font-semibold text-black px-3 py-2 rounded hover:bg-blue-500 transition-colors' 
