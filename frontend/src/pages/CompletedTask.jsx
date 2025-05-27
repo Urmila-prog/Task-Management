@@ -16,7 +16,7 @@ const CompletedTask = () => {
                 return;
             }
 
-            const response = await axios.get('http://localhost:1000/api/v2/geticomtask', {
+            const response = await axios.get('https://task-management-2qxv.onrender.com/api/v2/geticomtask', {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }

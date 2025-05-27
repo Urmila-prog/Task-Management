@@ -20,7 +20,7 @@ const AllTasks = () => {
         return;
       }
 
-      const response = await axios.get("http://localhost:1000/api/v2/getalltask", {
+      const response = await axios.get("https://task-management-2qxv.onrender.com/api/v2/getalltask", {
         headers: {
           'Authorization': `Bearer ${token}`
         }

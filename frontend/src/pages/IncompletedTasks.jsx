@@ -18,7 +18,7 @@ const IncompletedTasks = () => {
                     return;
                 }
 
-                const response = await axios.get("http://localhost:1000/api/v2/getincomtask", {
+                const response = await axios.get("https://task-management-2qxv.onrender.com/api/v2/getincomtask", {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }

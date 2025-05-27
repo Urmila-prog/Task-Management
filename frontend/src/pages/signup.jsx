@@ -15,7 +15,7 @@ const Signup = () => {
       return;
     } else {
       try {
-        const response = await axios.post('http://localhost:1000/api/v1/signup', data);
+        const response = await axios.post('https://task-management-2qxv.onrender.com/api/v1/signup', data);
         setData({ username: "", email: "", password:"" });
         alert(response.data.message);
         history('/login');

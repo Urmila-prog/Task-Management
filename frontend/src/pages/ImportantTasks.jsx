@@ -16,7 +16,7 @@ const ImportantTasks = () => {
                 return;
             }
 
-            const response = await axios.get('http://localhost:1000/api/v2/getimptask', {
+            const response = await axios.get('https://task-management-2qxv.onrender.com/api/v2/getimptask', {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
