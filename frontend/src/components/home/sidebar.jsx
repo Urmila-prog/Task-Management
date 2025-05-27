@@ -27,7 +27,7 @@ const Sidebar = () => {
                     return;
                 }
 
-                const response = await axios.get(`http://localhost:1000/api/v1/user/${userId}`, {
+                const response = await axios.get(`https://task-management-2qxv.onrender.com/api/v1/user/${userId}`, {
                     headers: {
                         authorization: `Bearer ${token}`
                     }
