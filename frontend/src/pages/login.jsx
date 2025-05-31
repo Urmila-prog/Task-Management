@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import axios from 'axios';
 import { authActions } from '../store/auth';
+import GoogleLoginComponent from '../components/GoogleLogin';
 
 const Login = () => {
   const [data, setData] = useState({username:'', password:''});
@@ -27,12 +28,15 @@ const Login = () => {
     setError('');
 
     try {
-      const response = await axios.post('https://task-management-2qxv.onrender.com/api/v1/login', data, {
+      console.log('Attempting login with:', { username: data.username });
+      const response = await axios.post('https://task-management-2qxv.onrender.com/api/v1/user/login', data, {
         headers: {
           'Content-Type': 'application/json'
         },
         timeout: 5000 // 5 second timeout
       });
+      
+      console.log('Login response:', response.data);
       
       if (response?.data) {
         setData({ username: "", password: "" });
@@ -44,7 +48,12 @@ const Login = () => {
         setError('Invalid response from server');
       }
     } catch (error) {
-      console.error('Login error:', error);
+      console.error('Login error details:', {
+        message: error.message,
+        response: error.response?.data,
+        status: error.response?.status,
+        url: error.config?.url
+      });
       
       if (error.code === 'ECONNABORTED') {
         setError('Request timed out. Please try again.');
@@ -108,6 +117,18 @@ const Login = () => {
           >
             {isLoading ? 'Logging in...' : 'Login'}
           </button>
+
+          <div className="relative my-4">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-gray-600"></div>
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-2 bg-gray-800 text-gray-400">Or continue with</span>
+            </div>
+          </div>
+
+          <GoogleLoginComponent />
+
           <div className='text-center'>
             <Link 
               to='/signup' 
