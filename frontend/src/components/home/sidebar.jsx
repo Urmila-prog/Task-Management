@@ -27,12 +27,20 @@ const Sidebar = () => {
                     return;
                 }
 
-                const response = await axios.get(`https://task-management-2qxv.onrender.com/api/v1/user/${userId}`, {
+                console.log('Fetching user data for ID:', userId);
+                const response = await axios.get(`https://task-management-2qxv.onrender.com/api/v1/user/user/${userId}`, {
                     headers: {
-                        authorization: `Bearer ${token}`
+                        'Authorization': `Bearer ${token}`
                     }
                 });
-                setUserData(response.data);
+
+                if (response.data) {
+                    console.log('User data received:', response.data);
+                    setUserData(response.data);
+                } else {
+                    console.error('No user data in response');
+                    throw new Error('No user data received');
+                }
             } catch (error) {
                 console.error('Error fetching user data:', error.response?.data || error.message);
                 if (error.response?.status === 401 || error.response?.status === 403) {

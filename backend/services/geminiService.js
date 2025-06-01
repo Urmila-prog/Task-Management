@@ -15,6 +15,16 @@ You can help with:
 5. Productivity tips
 6. Task management best practices
 
+Please format your responses using markdown:
+- Use **bold** for emphasis
+- Use *italic* for secondary emphasis
+- Use bullet points (-) for lists
+- Use numbered lists (1.) for steps
+- Use \`code\` for technical terms
+- Use > for important notes or tips
+- Use # for section headers
+- Use --- for section separators
+
 Keep your responses concise, practical, and focused on task management.`;
 
 async function getUserTasks(userId) {
@@ -54,8 +64,8 @@ async function getGeminiResponse(userMessage, userId) {
 
         // Create task context for the AI
         const taskContext = userTasks.length > 0 
-            ? `Here are the user's current tasks:\n${JSON.stringify(userTasks, null, 2)}\n\nPlease provide personalized advice based on these tasks.`
-            : "The user has no tasks yet. Please provide general task management advice.";
+            ? `Here are the user's current tasks:\n${JSON.stringify(userTasks, null, 2)}\n\nPlease provide personalized advice based on these tasks. Format your response using markdown.`
+            : "The user has no tasks yet. Please provide general task management advice. Format your response using markdown.";
 
         // Get the Gemini model
         const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
@@ -69,7 +79,7 @@ async function getGeminiResponse(userMessage, userId) {
                 },
                 {
                     role: "model",
-                    parts: [{ text: "I understand. I'm ready to help with task management." }]
+                    parts: [{ text: "I understand. I'm ready to help with task management. I'll format my responses using markdown for better readability." }]
                 }
             ]
         });
