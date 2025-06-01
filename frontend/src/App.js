@@ -8,6 +8,7 @@ import IncompletedTasks from './pages/IncompletedTasks';
 import Signup from './pages/signup';
 import Login from './pages/login';
 import {useSelector} from 'react-redux';
+import Chatbot from './components/chatbot';
 
 const App = () => {
   const navigate = useNavigate();
@@ -40,6 +41,11 @@ const App = () => {
           </Routes>
         </div>
       </div>
+      {isLoggedIn && (
+        <div className="fixed bottom-4 right-4 z-50">
+          <Chatbot />
+        </div>
+      )}
     </div>
   );
 };

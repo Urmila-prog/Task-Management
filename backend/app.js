@@ -5,6 +5,12 @@ const app = express();
 const cors = require('cors');
 const mongoose = require('mongoose');
 
+// Validate required environment variables
+if (!process.env.GOOGLE_AI_API_KEY) {
+    console.error('GOOGLE_AI_API_KEY is not set in environment variables');
+    process.exit(1);
+}
+
 // MongoDB connection setup
 mongoose.connection.on('connected', () => {
     console.log('MongoDB connected successfully');
@@ -42,10 +48,11 @@ connectDB();
 
 // CORS configuration
 const corsOptions = {
-    origin: ['http://localhost:3000', 'https://task-management-2qxv.onrender.com'],
+    origin: '*',  // Allow all origins during development
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
-    credentials: true
+    credentials: true,
+    optionsSuccessStatus: 200
 };
 
 // Middleware
@@ -56,6 +63,7 @@ app.use(express.urlencoded({ extended: true }));
 // Import routes
 const UserAPI = require('./routs/user');
 const TaskAPI = require('./routs/task');
+const TestAPI = require('./routs/test');
 
 // Log all requests
 app.use((req, res, next) => {
@@ -105,6 +113,12 @@ app.use('/api/v2', (req, res, next) => {
     console.log('Task API route accessed:', req.method, req.url);
     next();
 }, TaskAPI);
+
+// Test routes without authentication
+app.use('/api/test', (req, res, next) => {
+    console.log('Test API route accessed:', req.method, req.url);
+    next();
+}, TestAPI);
 
 // Health check endpoint
 app.get('/health', (req, res) => {

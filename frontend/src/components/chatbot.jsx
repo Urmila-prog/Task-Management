@@ -1,20 +1,153 @@
-import React from 'react'
+import React, { useState, useRef, useEffect } from 'react';
+import { TbMessageChatbotFilled } from 'react-icons/tb';
+import { MdOutlineKeyboardArrowDown, MdOutlineKeyboardArrowUp } from 'react-icons/md';
+import { IoSend } from 'react-icons/io5';
+import { sendMessage, getChatHistory } from '../services/chatbotService';
 
 const Chatbot = () => {
-  return (
-    <div className="hover:bg-black-300">
-      <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 1024 1024"><path d="M738.3 
-     287.6H285.7c-59 0-106.8 47.8-106.8 106.8v303.1c0 59 47.8 106.8 106.8 106.8h81.5v111.1c0 .7.8 1.1 1.4.
-     7l166.9-110.6 41.8-.8h117.4l43.6-.4c59 0 106.8-47.8 106.8-106.8V394.5c0-59-47.8-106.9-106.8-106.
-    9zM351.7 448.2c0-29.5 23.9-53.5 53.5-53.5s53.5 23.9 53.5 53.5-23.9 53.5-53.5 53.5-53.5-23.9-53.5-53.
-     5zm157.9 267.1c-67.8 0-123.8-47.5-132.3-109h264.6c-8.6 61.5-64.5 109-132.3 109zm110-213.7c-29.5 0-53.5-23.
-     9-53.5-53.5s23.9-53.5 53.5-53.5 53.5 23.9 53.5 53.5-23.9 53.5-53.5 53.5zM867.2 644.5V453.1h26.5c19.4 0 
-     35.1 15.7 35.1 35.1v121.1c0 19.4-15.7 35.1-35.1 35.1h-26.5zM95.2 609.4V488.2c0-19.4 15.7-35.1 35.1-35.
-     1h26.5v191.3h-26.5c-19.4 0-35.1-15.7-35.1-35.1zM561.5 149.6c0 23.4-15.6 43.3-36.9 49.7v44.9h-30v-44.9c-21
-     .4-6.5-36.9-26.3-36.9-49.7 0-28.6 23.3-51.9 51.9-51.9s51.9 23.3 51.9 51.9z" />
-</svg>
-    </div>
-  )
-}
+  const [isOpen, setIsOpen] = useState(false);
+  const [messages, setMessages] = useState([
+    { text: "Hello! How can I help you today?", isBot: true }
+  ]);
+  const [inputMessage, setInputMessage] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const messagesEndRef = useRef(null);
 
-export default Chatbot
+  useEffect(() => {
+    const loadChatHistory = async () => {
+      try {
+        const history = await getChatHistory();
+        if (history && history.messages) {
+          setMessages(history.messages);
+        }
+      } catch (error) {
+        console.error('Failed to load chat history:', error);
+      }
+    };
+    loadChatHistory();
+  }, []);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  const handleSendMessage = async (e) => {
+    e.preventDefault();
+    if (!inputMessage.trim() || isLoading) return;
+
+    try {
+      setIsLoading(true);
+      // Add user message
+      setMessages(prev => [...prev, { text: inputMessage, isBot: false }]);
+      const userMessage = inputMessage;
+      setInputMessage('');
+
+      // Get bot response
+      const response = await sendMessage(userMessage);
+      if (response && response.message) {
+        setMessages(prev => [...prev, { 
+          text: response.message,
+          isBot: true 
+        }]);
+      } else {
+        setMessages(prev => [...prev, { 
+          text: "I'm not sure how to help with that. Could you please rephrase your question?",
+          isBot: true 
+        }]);
+      }
+    } catch (error) {
+      console.error('Chat error:', error);
+      let errorMessage = "I'm having trouble understanding. Could you please try asking in a different way?";
+      
+      if (error.response) {
+        // Server responded with an error
+        errorMessage = error.response.data?.message || errorMessage;
+      } else if (error.request) {
+        // No response received
+        errorMessage = "I'm having trouble connecting to the server. Please check your internet connection and try again.";
+      }
+      
+      setMessages(prev => [...prev, { 
+        text: errorMessage,
+        isBot: true 
+      }]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div className="relative">
+      <div 
+        className="flex items-center hover:bg-gray-600 p-2 rounded cursor-pointer"
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        <TbMessageChatbotFilled className="text-2xl" />
+        <div className="ml-2">
+          <div>Chat</div>
+          <div className="text-xs">with us</div>
+        </div>
+        {isOpen ? 
+          <MdOutlineKeyboardArrowUp className="ml-auto" /> : 
+          <MdOutlineKeyboardArrowDown className="ml-auto" />
+        }
+      </div>
+
+      {isOpen && (
+        <div className="absolute bottom-full mb-2 right-0 w-80 bg-gray-800 rounded-lg shadow-lg">
+          <div className="h-96 flex flex-col">
+            {/* Chat messages */}
+            <div className="flex-1 overflow-y-auto p-4 space-y-4">
+              {messages.map((message, index) => (
+                <div
+                  key={index}
+                  className={`flex ${message.isBot ? 'justify-start' : 'justify-end'}`}
+                >
+                  <div
+                    className={`max-w-[80%] rounded-lg p-3 ${
+                      message.isBot
+                        ? 'bg-gray-700 text-white'
+                        : 'bg-blue-500 text-white'
+                    }`}
+                  >
+                    {message.text}
+                  </div>
+                </div>
+              ))}
+              <div ref={messagesEndRef} />
+            </div>
+
+            {/* Input area */}
+            <form onSubmit={handleSendMessage} className="p-4 border-t border-gray-700">
+              <div className="flex items-center gap-2">
+                <input
+                  type="text"
+                  value={inputMessage}
+                  onChange={(e) => setInputMessage(e.target.value)}
+                  placeholder="Type your message..."
+                  className="flex-1 bg-gray-700 text-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  disabled={isLoading}
+                />
+                <button
+                  type="submit"
+                  className={`bg-blue-500 text-white p-2 rounded-lg transition-colors ${
+                    isLoading ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-600'
+                  }`}
+                  disabled={isLoading}
+                >
+                  <IoSend className="text-xl" />
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default Chatbot;

@@ -81,13 +81,14 @@ const Sidebar = () => {
             </div>
             <div>
                 {data.map((item, i) => (
-                    <Link 
-                        to={item.link} 
-                        key={i} 
-                        className='my-2 flex items-center hover:bg-gray-600 p-2 rounded'
-                    >
-                        {item.icon}&nbsp;{item.title}
-                    </Link>
+                    <React.Fragment key={i}>
+                        <Link 
+                            to={item.link} 
+                            className='my-2 flex items-center hover:bg-gray-600 p-2 rounded'
+                        >
+                            {item.icon}&nbsp;{item.title}
+                        </Link>
+                    </React.Fragment>
                 ))}
             </div>
             <div className='mt-auto'>

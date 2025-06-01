@@ -3,7 +3,6 @@ import Cards from '../components/home/Cards';
 import InputData from '../components/home/InputData';
 import { IoIosAddCircle } from "react-icons/io";
 import axios from 'axios';
-import Chatbot from '../components/chatbot';
 
 const AllTasks = () => {
   const [inputDiv, setInputDiv] = useState('hidden');
@@ -74,11 +73,6 @@ const AllTasks = () => {
         </div>
       </div>
       <InputData inputDiv={inputDiv} setInputDiv={setInputDiv} onTaskCreated={fetchTasks}/>
-      
-      {/* Chatbot positioned at bottom right */}
-      <div className="fixed bottom-4 right-4 z-50">
-        <Chatbot />
-      </div>
     </>
   );
 };

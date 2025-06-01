@@ -2,6 +2,8 @@ const router = require('express').Router();
 const Task = require('../models/tasks');
 const User = require('../models/user');
 const {authenticateToken} = require('../middleware/auth');
+const Chat = require('../models/chat');
+const { getGeminiResponse } = require('../services/geminiService');
 
 // Helper function to get user ID from request
 const getUserId = (req) => {
@@ -160,6 +162,98 @@ router.get('/getincomtask', authenticateToken, async (req, res) => {
     } catch (err) {
         console.error('Error fetching incomplete tasks:', err);
         return res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
+// Chatbot endpoint with authentication
+router.post('/chat', authenticateToken, async (req, res) => {
+    try {
+        const userId = getUserId(req);
+        console.log('Chat request received:', {
+            body: req.body,
+            userId: userId
+        });
+
+        const { message } = req.body;
+
+        if (!message) {
+            return res.status(400).json({ 
+                message: 'Please provide a message to chat.' 
+            });
+        }
+
+        // Get response from Gemini AI with user's tasks
+        const response = await getGeminiResponse(message, userId);
+
+        // Save the chat message and response
+        await Chat.findOneAndUpdate(
+            { userId },
+            { 
+                $push: { 
+                    messages: [
+                        { text: message, isBot: false },
+                        { text: response, isBot: true }
+                    ]
+                }
+            },
+            { upsert: true, new: true }
+        );
+
+        res.status(200).json({ message: response });
+    } catch (err) {
+        console.error('Chat error:', err);
+        res.status(500).json({ 
+            message: 'Sorry, I encountered an error. Please try again.' 
+        });
+    }
+});
+
+router.get('/chat/history', authenticateToken, async (req, res) => {
+    try {
+        const userId = getUserId(req);
+        const chatHistory = await Chat.find({ userId })
+            .sort({ createdAt: -1 })
+            .limit(1);
+
+        if (!chatHistory.length) {
+            return res.status(200).json({ 
+                messages: [
+                    { text: "Hello! How can I help you today?", isBot: true }
+                ]
+            });
+        }
+
+        res.status(200).json({ messages: chatHistory[0].messages });
+    } catch (err) {
+        console.error('Error fetching chat history:', err);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
+// Test chatbot endpoint without authentication
+router.post('/test-chat', async (req, res) => {
+    try {
+        console.log('Test chat request received:', {
+            body: req.body
+        });
+
+        const { message } = req.body;
+
+        if (!message) {
+            return res.status(400).json({ 
+                message: 'Please provide a message to chat.' 
+            });
+        }
+
+        // Get response from Gemini AI
+        const response = await getGeminiResponse(message);
+
+        res.status(200).json({ message: response });
+    } catch (err) {
+        console.error('Chat error:', err);
+        res.status(500).json({ 
+            message: 'Sorry, I encountered an error. Please try again.' 
+        });
     }
 });
 
