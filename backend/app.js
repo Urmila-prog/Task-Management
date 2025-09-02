@@ -5,6 +5,15 @@ const app = express();
 const cors = require('cors');
 const mongoose = require('mongoose');
 
+// Debug environment variables
+console.log('=== Environment Debug ===');
+console.log('NODE_ENV:', process.env.NODE_ENV);
+console.log('GOOGLE_AI_API_KEY exists:', !!process.env.GOOGLE_AI_API_KEY);
+console.log('GOOGLE_AI_API_KEY length:', process.env.GOOGLE_AI_API_KEY ? process.env.GOOGLE_AI_API_KEY.length : 0);
+console.log('MONGO_URI exists:', !!process.env.MONGO_URI);
+console.log('All env keys:', Object.keys(process.env).filter(key => key.includes('GOOGLE') || key.includes('MONGO')));
+console.log('=========================');
+
 // Validate required environment variables
 if (!process.env.GOOGLE_AI_API_KEY) {
     console.error('GOOGLE_AI_API_KEY is not set in environment variables');
