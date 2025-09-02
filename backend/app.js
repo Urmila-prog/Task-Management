@@ -146,12 +146,25 @@ app.get('/health', (req, res) => {
 
 // Default route
 app.get('/', (req, res) => {
-    res.json({ 
+// Health check endpoint
+app.get('/health', (req, res) => {
+    res.json({
         message: 'Task Management API',
         version: '1.0.0',
         status: 'running',
         mongodb: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected'
     });
+});
+
+// Debug endpoint for environment variables
+app.get('/debug/env', (req, res) => {
+    res.json({
+        hasGoogleApiKey: !!process.env.GOOGLE_AI_API_KEY,
+        nodeEnv: process.env.NODE_ENV || 'development',
+        keySample: process.env.GOOGLE_AI_API_KEY ? process.env.GOOGLE_AI_API_KEY.substring(0, 10) + '...' : 'not set',
+        mongoExists: !!process.env.MONGO_URI
+    });
+});
 });
 
 // 404 handler
