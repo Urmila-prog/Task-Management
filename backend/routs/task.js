@@ -131,7 +131,7 @@ router.get('/getimptask', authenticateToken, async (req, res) => {
     }
 });
 
-router.get('/geticomtask', authenticateToken, async (req, res) => {
+router.get('/getcomtask', authenticateToken, async (req, res) => {
     try {
         const { id } = req.params;
         const userId = getUserId(req);
